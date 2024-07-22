@@ -1,0 +1,103 @@
+---
+- name: SD Card Setup for ArchLinux ARM on Raspberry Pi
+  hosts: localhost
+  become: true
+  vars:
+    download_url: "http://os.archlinuxarm.org/os/ArchLinuxARM-rpi-aarch64-latest.tar.gz"
+    sd_card: "{{ lookup('pipe', 'lsblk -dpno NAME | grep -E \'^/dev/mmcblk[0-9]$\'') }}"
+  tasks:
+    - name: Check if SD card is found
+      fail:
+        msg: "No mmc device found. Exiting."
+      when: sd_card == ""
+
+    - name: Unmount partitions if they are already mounted
+      shell: "umount {{ sd_card }}* || true"
+      ignore_errors: yes
+
+    - name: Delete all partitions from the SD card
+      shell: "wipefs -a {{ sd_card }}"
+      ignore_errors: yes
+
+    - name: Partition the SD card
+      shell: |
+        fdisk {{ sd_card }} <<EOF
+        o
+        p
+        n
+        p
+        1
+
+        +500M
+        t
+        c
+        n
+        p
+        2
+
+
+        w
+        EOF
+
+    - name: Create FAT filesystem on the first partition
+      shell: "mkfs.vfat {{ sd_card }}p1"
+    
+    - name: Create ext4 filesystem on the second partition
+      shell: "mkfs.ext4 {{ sd_card }}p2"
+
+    - name: Create mount points
+      file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - /mnt/boot
+        - /mnt/root
+
+    - name: Mount the first partition to /mnt/boot
+      mount:
+        src: "{{ sd_card }}p1"
+        path: /mnt/boot
+        fstype: vfat
+        state: mounted
+
+    - name: Mount the second partition to /mnt/root
+      mount:
+        src: "{{ sd_card }}p2"
+        path: /mnt/root
+        fstype: ext4
+        state: mounted
+
+    - name: Download the root filesystem
+      get_url:
+        url: "{{ download_url }}"
+        dest: /tmp/
+
+    - name: Extract the root filesystem
+      unarchive:
+        src: "/tmp/{{ download_url | basename }}"
+        dest: /mnt/root
+        extra_opts: [--strip-components=1]
+
+    - name: Move boot files to the first partition
+      command: mv /mnt/root/boot/* /mnt/boot
+
+    - name: Update /etc/fstab
+      replace:
+        path: /mnt/root/etc/fstab
+        regexp: 'mmcblk0'
+        replace: 'mmcblk1'
+
+    - name: Copy bootloader
+      copy:
+        src: ~/download/boot/kernel8.img
+        dest: /mnt/boot/kernel8.img
+
+    - name: Unmount all partitions
+      shell: |
+        sync
+        umount /mnt/boot
+        umount /mnt/root
+
+    - name: SD card setup complete!
+      debug:
+        msg: "SD card setup complete!"
