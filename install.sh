@@ -5,6 +5,8 @@ SD_CARD=$(lsblk -dpno NAME | grep -E '^/dev/mmcblk[0-9]$')
 
 DOWNLOAD_URL64="http://os.archlinuxarm.org/os/ArchLinuxARM-rpi-aarch64-latest.tar.gz"
 DOWNLOAD_FILE=$(echo "$DOWNLOAD_URL64" | grep -oE '[^/]+$')
+BOOTLOADER_URL="http://mirror.archlinuxarm.org/aarch64/alarm/uboot-raspberrypi-2024.07-3-aarch64.pkg.tar.xz"
+BOOTLOADER_FILE=$(echo "$BOOTLOADER_URL" | grep -oE '[^/]+$')
 
 # Check if an mmc device was found
 if [ -z "$SD_CARD" ]; then
@@ -64,8 +66,13 @@ mv root/boot/* boot
 # Before unmounting the partitions, update /etc/fstab for the different SD block device compared to the Raspberry Pi 3
 sed -i 's/mmcblk0/mmcblk1/g' root/etc/fstab
 
+# Download and extract the new u-boot bootloader
+echo "Downloading and extraxting new bootloader..."
+wget $BOOTLOADER_URL
+tar -xf uboot-raspberrypi-2024.07-3-aarch64.pkg.tar.xz -C /tmp
+
 echo "Copying bootloader..."
-cp $HOME/download/boot/kernel8.img $HOME/boot
+cp /tmp/boot/kernel8.img $HOME/boot
 
 # Unmount partitions
 sync && umount boot root
