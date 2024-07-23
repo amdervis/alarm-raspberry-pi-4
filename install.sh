@@ -53,11 +53,12 @@ mkfs.ext4 ${SD_CARD}p2
 mkdir -p root
 mount ${SD_CARD}p2 root
 
-# Download and extract the root filesystem
-echo "Downloading and extracting the root filesystem..."
-wget $DOWNLOAD_URL64
-tar -xpf $DOWNLOAD_FILE -C root
-
+if [ ! -f $DOWNLOAD_FILE ]; then
+    # Download and extract the root filesystem
+    echo "Downloading and extracting the root filesystem..."
+    wget $DOWNLOAD_URL64
+    tar -xpf $DOWNLOAD_FILE -C root
+fi
 
 # Move boot files to the first partition
 echo "Moving boot files to the first partition..."
@@ -66,10 +67,12 @@ mv root/boot/* boot
 # Before unmounting the partitions, update /etc/fstab for the different SD block device compared to the Raspberry Pi 3
 sed -i 's/mmcblk0/mmcblk1/g' root/etc/fstab
 
-# Download and extract the new u-boot bootloader
-echo "Downloading and extraxting new bootloader..."
-wget $BOOTLOADER_URL
-tar -xf uboot-raspberrypi-2024.07-3-aarch64.pkg.tar.xz -C /tmp
+if [ ! -f $BOOTLOADER_FILE ]; then
+    # Download and extract the new u-boot bootloader
+    echo "Downloading and extraxting new bootloader..."
+    wget $BOOTLOADER_URL
+    tar -xf uboot-raspberrypi-2024.07-3-aarch64.pkg.tar.xz -C /tmp
+fi
 
 echo "Copying bootloader..."
 cp /tmp/boot/kernel8.img $HOME/boot
