@@ -129,3 +129,13 @@ Add `your-user` user to sudoers file:
 ```sh
 echo "$USER ALL=(ALL) ALL" >> /etc/sudoers
 ```
+## Kernel
+For hardware acceleration, a requirement is the `linux-rpi` kernel (RPi Foundation fork), not vanilla kernel:
+```sh
+pacman -S linux-rpi --noconfirm
+```
+
+Reboot after the kernel and bootloader replacement:
+```sh
+sudo reboot
+```
