@@ -1,4 +1,4 @@
-[![Build Status](https://your-userdigitalsignage.com/tmp/logos/images.png)](https://archlinuxarm.org/platforms/armv8/broadcom/raspberry-pi-4)
+[![Build Status](https://realdigitalsignage.com/tmp/logos/images.png)](https://archlinuxarm.org/platforms/armv8/broadcom/raspberry-pi-4)
 # AArch64 Installation
 
 This provides an installation using the mainline kernel and U-Boot. Use this installation only if you have no dependencies on the closed source vendor libraries shipped in the ARMv7 release. This installation has near full support for the device, including the VC4 graphics.
