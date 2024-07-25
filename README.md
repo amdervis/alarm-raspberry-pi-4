@@ -1,5 +1,9 @@
 [![Build Status](https://realdigitalsignage.com/tmp/logos/images.png)](https://archlinuxarm.org/platforms/armv8/broadcom/raspberry-pi-4)
 # AArch64 Installation
+Lots of information presented in this guide is based on already existing guides / resources. Specifically, I'd like to thank and reference:
+-  [ArchARM](https://archlinuxarm.org/platforms/armv8/broadcom/raspberry-pi-4)
+-  [itsfoss](https://itsfoss.com/install-arch-raspberry-pi/)
+-  [kiljan](https://kiljan.org/2021/05/28/64-bit-arch-linux-arm-on-a-raspberry-pi-4-model-b-with-8-gb-of-ram-may-2021-update/)
 
 This provides an installation using the mainline kernel and U-Boot. Use this installation only if you have no dependencies on the closed source vendor libraries shipped in the ARMv7 release. This installation has near full support for the device, including the VC4 graphics.
 
