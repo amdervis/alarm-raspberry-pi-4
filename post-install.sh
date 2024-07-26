@@ -2,6 +2,11 @@
 
 set -e
 
+USER=""
+TIMEZONE=""
+KEYMAP=""
+OLD_USER=""
+
 pacman_setup () {
     # Pacman keyring init
     pacman-key --init
