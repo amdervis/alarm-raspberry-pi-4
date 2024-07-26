@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Find the SD card device that starts with mmc
 SD_CARD=$(lsblk -dpno NAME | grep -E '^/dev/mmcblk[0-9]$')
 
